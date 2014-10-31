@@ -1,0 +1,1 @@
+    <p id="comment"><a href="#">Comment</a> on one of the works in this gallery (must be signed-in).</p>

@@ -1,0 +1,215 @@
+@import url(../js/fancybox/jquery.fancybox.css);
+
+body {
+	margin-left: 10%;
+	margin-top: 1em;
+	margin-right: 10%;
+        background-image:url('../images/bg.jpg');
+	font-family: Calibri,Arial,sans-serif;
+}
+h1 {
+	font-family: Calibri,Arial, sans-serif;
+	color: #FFFFFF;
+}
+
+main p {
+    color: #FFFFFF;
+}
+
+p#about_blurb {
+    font-size: 125%;
+}
+
+main h2 {
+    color: #FFFFFF;
+    font-size: 1.25em;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+nav#site-nav {
+    margin: 0;
+}
+
+nav#site-nav ul {
+    margin: 0;
+    list-style: none;
+    padding: 0.5em 0 0.5em 0;
+    border: none;
+    font-weight: normal;
+    font-size: 90%;
+    color: white;
+    white-space: nowrap;
+}
+
+nav#site-nav ul li {
+    display: inline;
+    margin: 0.25em;
+}
+
+nav#site-nav ul li a {
+    padding: 0.5em;
+    margin-right: 0.25em;
+    background-color: black;
+    border: none;
+    text-decoration: none;
+    color: white;
+}
+
+nav#site-nav ul li a:link,
+nav#site-nav ul li a:visited {
+    color: white;
+}
+
+nav#site-nav ul li a:hover,
+nav#site-nav ul li.youarehere a {
+    color: #FF00FF;
+    border-bottom-style: solid;
+}
+
+//img#portrait_example, img#creative_example, img#fantsy_example, img#model_example {
+//    height:300px;
+//    width: auto;
+//}
+
+footer p {
+    color: #FF00FF;
+}
+
+nav#breadcrumb {
+    float: left;
+    font-size: 90%;
+    color: white;
+}
+
+nav#breadcrumb ul {
+    list-style: none;
+    display: inline;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+nav#breadcrumb ul li {
+    display: inline;
+}
+
+nav#breadcrumb ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+nav#breadcrumb ul ul li {
+    background-image: url(../images/arrow.gif);
+    background-position: left;
+    background-repeat: no-repeat;
+    padding-left: 25px;
+}
+
+ul.gallery { 
+        clear: both;
+	list-style: none; 
+	padding: 0; 
+	margin: 0;
+}
+
+ul.gallery li {
+        background-color: white;
+	margin-top: 1em;
+	font-size: 1em;
+	height: 180px; 
+	width: 150px;
+	float: left;
+	text-align: center;
+	border: thin dotted white;
+	margin: 10px; 
+	padding: 10px;
+}
+
+ul.gallery li a:link, ul.gallery li a:visited {
+    text-decoration: none; 
+    color: #000000;
+}
+
+ul.gallery li img { border: none; }
+
+p.credits {
+        clear: both;
+        border: none;
+        margin-top: 20px;
+        padding: 1em;
+        font-size: smaller;
+}
+
+/* Everything between here and the footer CSS is for the login form.
+This CSS is borrowed heavily from http://www.hongkiat.com/blog/html5-loginpage/ */
+
+.loginform fieldset {
+    float: left;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    border: solid 5px black;
+}
+
+.loginform legend {
+    color: #FFFFFF;
+}
+
+.loginform ul {
+    padding: 0;
+    margin: 0;
+}
+
+.loginform li {
+    display: inline;
+    float: left;
+}
+
+label {  
+    display: block;  
+    color: #FFFFFF;  
+}  
+
+.loginform input:not([type=submit]) {  
+    padding: 5px;  
+    margin-right: 10px;  
+    border: 1px solid rgba(0, 0, 0, 0.3);  
+    border-radius: 3px;  
+    box-shadow: inset 0px 1px 3px 0px rgba(0, 0, 0, 0.1),   
+                0px 1px 0px 0px rgba(250, 250, 250, 0.5) ;  
+}  
+
+.loginform input[type=submit] {
+    background-color: #FF00FF;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    color: #fff;
+    padding: 5px 15px;
+    margin-right: 0;
+    margin-top: 15px;
+    border-radius: 3px;
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+#comment {
+    clear: both;
+    color: #FFFFFF;
+}
+
+footer {
+    font-size: 50%;
+    clear: both;
+}
+
+#comment a:link, #comment a:visited, main a:link, main a:visited {
+    text-decoration: none; 
+    color: #FF00FF; 
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+.gallery li a {
+    font-size: 75%;
+}
+
+a:hover { text-decoration: underline; }
+a:active { border: none; text-decoration: none; }
+
+
