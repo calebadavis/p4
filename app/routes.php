@@ -13,16 +13,36 @@
 
 Route::get('/', function()
 {
-	return View::make('hello');
+        $galleries = Gallery::all();
+        return View::make(
+            'index', 
+             array(
+               'galleries'=>$galleries,
+               'isGal'=>FALSE,
+               'isHome'=>TRUE,
+               'isAbout'=>FALSE
+             )
+        );
+
+});
+
+Route::get('about', function()
+{
+        $galleries = Gallery::all();
+        return View::make(
+            'about', 
+             array(
+               'galleries'=>$galleries,
+               'isGal'=>FALSE,
+               'isHome'=>FALSE,
+               'isAbout'=>TRUE
+             )
+        );
+
 });
 
 
 Route::get('gallery/{id}', 'GalleryController@display');
-
-Route::get('uploadFile', function(){
-    return View::make('upload_file');
-});
-
 
 /**
  * Administrative actions on photos in a gallery are handled implicitly

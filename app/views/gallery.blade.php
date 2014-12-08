@@ -17,26 +17,6 @@
 @stop
 
 @section("content")
-    <hr id="begin-site-nav"/>
-    <nav id="site-nav">
-      <ul>
-        <li id="Home"><a href="/">Home</a></li>
-        @foreach ($galleries as $gal)
-        <li 
-          id="{{$gal->name}}" 
-          @if ($gal->id == $gallery->id)
-            class="youarehere"
-          @endif
-        >
-          <a href="/gallery/{{$gal->id}}">{{$gal->name}}</a>
-        </li>
-        @endforeach
-	<li id="About"><a href="/about">About Me</a></li>
-      </ul>
-    </nav>
-
-    <hr id="end-site-nav"/>
-
     <nav id="breadcrumb">
       <ul>
         <li>
