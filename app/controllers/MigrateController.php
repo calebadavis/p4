@@ -46,10 +46,10 @@ class MigrateController extends BaseController {
      */
     public function getIndex() {
         $oldGalleries = array(
-            "Modeling" => "photo_list.csv",
-            "Fantasy" => "fantasy.csv",
+            "Portraits" => "portraits.csv",
             "Creative" => "creative.csv",
-            "Portraits" => "portraits.csv"
+            "Fantasy" => "fantasy.csv",
+            "Modeling" => "photo_list.csv"
         );
 
 	foreach ($oldGalleries as $galName => $fname) {
