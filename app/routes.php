@@ -16,6 +16,29 @@ Route::get('/', function()
 	return View::make('hello');
 });
 
+
+Route::get('gallery/{id}', 'GalleryController@display');
+
+Route::get('uploadFile', function(){
+    return View::make('upload_file');
+});
+
+
+/**
+ * Administrative actions on photos in a gallery are handled implicitly
+ * by the PhotoController
+ */
+Route::controller('photo', 'PhotoController');
+
+
+/**
+* Migrate old format CSV galleries into new DB style
+* Note: This migrating of data is different from Laravel 'Migrations'.
+* (Implicit Routing)
+*/
+Route::controller('migrate', 'MigrateController');
+
+
 Route::get('mysql-test', function() {
 
     # Print environment
@@ -38,8 +61,7 @@ Route::get('/crud-test', function() {
 	$photo = new Photo();
         $photo->file = "images/pic1.jpg";
         $photo->thumb = "images/pic1_thumb.jpg";
-        $photo->photographer = "Lily";
-	$photo->model = "Kathy Ireland";
+        $photo->caption = "Photographer: Lily<br/>Model: Kathy Ireland";
         $photo->gallery_id = $gallery->id;
 	$photo->save();
 
@@ -48,8 +70,7 @@ Route::get('/crud-test', function() {
 
 	echo $photo->file."<br/>";
         echo $photo->thumb."<br/>";
-	echo $photo->photographer."<br/>";
-        echo $photo->model."<br/>";
+	echo $photo->caption."<br/>";
         echo $gallery->name."<br/>";
         $photo->delete();
 	$gallery->delete();

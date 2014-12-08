@@ -17,8 +17,7 @@ class CreatePhotosTable extends Migration {
                     $table->increments('id');
 		    $table->string('file');
 		    $table->string('thumb');
-                    $table->string('photographer');
-		    $table->string('model');
+                    $table->string('caption');
                     $table->timestamps();
 		    $table->integer('gallery_id')->unsigned();
                     $table->foreign('gallery_id')->references('id')->on('galleries');
