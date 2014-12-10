@@ -295,8 +295,6 @@ Route::post(
  
             if( $validation->passes() ) {
  
-                echo "Validation passed.";
-
                 try {
 
                     $gallery = Gallery::find($galleryId);
@@ -309,6 +307,19 @@ Route::post(
                      * Handle the main image file:
                      */
                     $filename = Input::file('image')->getClientOriginalName();
+
+                    try {
+                        /* Should throw exception */
+                        Photo::where('file', '=', $filename)->firstOrFail();
+
+                        /* Reaching this line means there's already a photo with that filename */
+                        return Redirect::to('/admin/newPhoto/' . $galleryId)
+                            ->with('flash_message', 'Publish failed: File "' . $filename . '" already exists.')
+                            ->withInput();
+
+                    } catch (Exception $e) {
+                    }
+
                     Input::file('image')->move(base_path() . "/public/images", $filename);
                     $photo->file = $filename;
 
@@ -316,6 +327,17 @@ Route::post(
                      * Handle the thumbnail:
                      */
                     $filename = Input::file('thumb')->getClientOriginalName();
+                    try {
+                        /* Should throw exception */
+                        Photo::where('thumb', '=', $filename)->firstOrFail();
+
+                        /* Reaching this line means there's already a photo with that filename */
+                        return Redirect::to('/admin/newPhoto/' . $galleryId)
+                            ->with('flash_message', 'Publish failed: File "' . $filename . '" already exists.')
+                            ->withInput();
+
+                    } catch (Exception $e) {
+                    }
                     Input::file('thumb')->move(base_path() . "/public/images", $filename);
                     $photo->thumb = $filename;
 
@@ -336,7 +358,7 @@ Route::post(
                         ->with('flash_message', 'Photo published!');
 
             } else {
-                echo "Validation Failed";
+
                 return Redirect::to('/admin/newPhoto/' . $galleryId)
                     ->with('flash_message', 'Invalid image/thumbnail')
                     ->withInput();
