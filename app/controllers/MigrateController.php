@@ -14,10 +14,12 @@ class MigrateController extends BaseController {
     /**
      * Helper function - converts a CSV-based gallery into new DB format
      */
-    private function _migrateCSV($fname, $galName) {
+    private function _migrateCSV($fname, $galName, $fullName, $imageFile) {
 
     	$gal = new Gallery();
 	$gal->name = $galName;
+        $gal->fullName = $fullName;
+        $gal->image = $imageFile;
 	$gal->save();
 
         $CSVPath = public_path()."/".$fname;
@@ -46,20 +48,22 @@ class MigrateController extends BaseController {
      */
     public function getIndex() {
         $oldGalleries = array(
-            "Portraits" => "portraits.csv",
-            "Creative" => "creative.csv",
-            "Fantasy" => "fantasy.csv",
-            "Modeling" => "photo_list.csv"
+            "Portraits" => array("portraits.csv", "Portraits", "MainButtonsPortrait.png"),
+            "Creative" => array("creative.csv", "Creative Photography", "MainButtonsCreative.png"),
+            "Fantasy" => array("fantasy.csv", "Fantasy Edits", "MainButtonsEdits.png"),
+            "Modeling" => array("photo_list.csv", "Modeling", "MainButtonsModel.png")
         );
 
-	foreach ($oldGalleries as $galName => $fname) {
-            echo "Migrating gallery " . $galName . " using file " . $fname . ":<br/>";
-            $this->_migrateCSV($fname, $galName);
+	foreach ($oldGalleries as $galName => $attribs) {
+            echo "Migrating gallery " . $galName . " using file " . $attribs[0] . ":<br/>";
+            $this->_migrateCSV($attribs[0], $galName, $attribs[1], $attribs[2]);
         }
 
         // Don't forget the restricted gallery!
         $restricted = new Gallery();
         $restricted->name = "Restricted";
+        $restricted->fullName = "Restricted Images";
+        $restricted->image = "MainButtonsRestricted.png";
         $restricted->restricted = TRUE;
         $restricted->save();
 

@@ -16,7 +16,7 @@
       <ul>
         <li 
           id="Home"
-@if ($isHome)
+@if ($navInfo["home"])
           class="youarehere"
 @endif
         >
@@ -26,7 +26,7 @@
 @if ( !($gal->restricted) || (Auth::check())) 
         <li 
           id="{{$gal->name}}" 
-@if ($isGal)
+@if ($navInfo["gal"])
 @if ($gal->id == $gallery->id)
               class="youarehere"
 @endif
@@ -38,7 +38,7 @@
 @endforeach
 	<li 
           id="About"
-@if ($isAbout)
+@if ($navInfo["about"])
             class="youarehere"
 @endif
         >
@@ -52,7 +52,7 @@
         </li>
 @else
           id="Signup"
-@if ($isSignup)
+@if ($navInfo["signup"])
           class="youarehere"
 @endif
         > 
@@ -60,7 +60,7 @@
         </li>
         <li 
           id="Log In"
-@if ($isLogin)
+@if ($navInfo["login"])
           class="youarehere"
 @endif
         >
@@ -70,7 +70,7 @@
 @if (Auth::check() && Auth::user()->admin)
 	<li 
           id="Admin"
-@if ($isAdmin)
+@if ($navInfo["admin"])
             class="youarehere"
 @endif
         >

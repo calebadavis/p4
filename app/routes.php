@@ -16,12 +16,7 @@ Route::get('/', function() {
     return View::make(
         'index', 
         array(
-            'isGal'    =>FALSE,
-            'isHome'   =>TRUE,
-            'isAbout'  =>FALSE,
-            'isLogin'  =>FALSE,
-            'isSignup' =>FALSE,
-            'isAdmin'  =>FALSE,
+            'navInfo'=>Gallery::navInfo("home"),
             'galleries'=>$galleries
         )
     );
@@ -33,12 +28,7 @@ Route::get('about', function() {
     return View::make(
         'about', 
         array(
-            'isGal'    =>FALSE,
-            'isHome'   =>FALSE,
-            'isAbout'  =>TRUE,
-            'isLogin'  =>FALSE,
-            'isSignup' =>FALSE,
-            'isAdmin'  =>FALSE,
+            'navInfo'=>Gallery::navInfo("about"),
             'galleries'=>$galleries
         )
     );
@@ -64,12 +54,7 @@ Route::get('/signup',
             return View::make(
                 'signup', 
                 array(
-                  'isGal'    =>FALSE,
-                  'isHome'   =>FALSE,
-                  'isAbout'  =>FALSE,
-                  'isLogin'  =>FALSE,
-                  'isSignup' =>TRUE,
-                  'isAdmin'  =>FALSE,
+                  'navInfo'=>Gallery::navInfo("signup"),
                   'galleries'=>$galleries
                 )
             );
@@ -121,12 +106,7 @@ Route::get('/login',
             return View::make(
                 'login',
                 array(
-                  'isGal'    =>FALSE,
-                  'isHome'   =>FALSE,
-                  'isAbout'  =>FALSE,
-                  'isLogin'  =>TRUE,
-                  'isSignup' =>FALSE,
-                  'isAdmin'  =>FALSE,
+                  'navInfo'=>Gallery::navInfo("login"),
                   'galleries'=>$galleries
                 )
             );
@@ -187,12 +167,7 @@ Route::get('/admin/galleryAction',
             return View::make(
                 'admin_gallery_select',
                 array(
-                  'isGal'    =>FALSE,
-                  'isHome'   =>FALSE,
-                  'isAbout'  =>FALSE,
-                  'isLogin'  =>FALSE,
-                  'isSignup' =>FALSE,
-                  'isAdmin'  =>TRUE,
+                  'navInfo'=>Gallery::navInfo("admin"),
                   'galleries'=>$galleries
                 )
             );
@@ -238,12 +213,7 @@ Route::get('/admin/modifyPhoto/{galleryId}',
                 return View::make(
                     'admin_modify_photo',
                     array(
-                      'isGal'    =>FALSE,
-                      'isHome'   =>FALSE,
-                      'isAbout'  =>FALSE,
-                      'isLogin'  =>FALSE,
-                      'isSignup' =>FALSE,
-                      'isAdmin'  =>TRUE,
+                      'navInfo'=>Gallery::navInfo("admin"),
                       'galleries'=>Gallery::all(),
                       'galleryId'=>$galleryId
                     )
@@ -267,12 +237,7 @@ Route::get('/admin/newPhoto/{galleryId}',
             return View::make(
                 'admin_new_photo',
                 array(
-                  'isGal'    =>FALSE,
-                  'isHome'   =>FALSE,
-                  'isAbout'  =>FALSE,
-                  'isLogin'  =>FALSE,
-                  'isSignup' =>FALSE,
-                  'isAdmin'  =>TRUE,
+                  'navInfo'=>Gallery::navInfo("admin"),
                   'galleries'=>Gallery::all(),
                   'galleryId'=>$galleryId
                 )
@@ -417,12 +382,7 @@ Route::get('/admin/deletePhoto/{galleryId}',
                 return View::make(
                     'admin_delete_photo',
                     array(
-                      'isGal'    =>FALSE,
-                      'isHome'   =>FALSE,
-                      'isAbout'  =>FALSE,
-                      'isLogin'  =>FALSE,
-                      'isSignup' =>FALSE,
-                      'isAdmin'  =>TRUE,
+                      'navInfo'=>Gallery::navInfo("admin"),
                       'galleries'=>Gallery::all(),
                       'galleryId'=>$galleryId
                     )

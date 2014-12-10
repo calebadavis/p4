@@ -25,12 +25,7 @@ class GalleryController extends BaseController {
         return View::make(
             'gallery', 
              array(
-                 'isGal'   =>TRUE,
-                 'isHome'  =>FALSE,
-                 'isAbout' =>FALSE,
-                 'isLogin' =>FALSE,
-                 'isSignup'=>FALSE,
-                 'isAdmin' =>FALSE,
+                 'navInfo'=>Gallery::navInfo("gal"),
                  'gallery'=>$gallery,
                  'galleries'=>$galleries
              )
