@@ -229,19 +229,30 @@ Route::get('/admin/modifyPhoto/{galleryId}',
     array(
         'before' => 'auth|adminUser',
         function($galleryId) {
-            return View::make(
-                'admin_modify_photo',
-                array(
-                  'isGal'    =>FALSE,
-                  'isHome'   =>FALSE,
-                  'isAbout'  =>FALSE,
-                  'isLogin'  =>FALSE,
-                  'isSignup' =>FALSE,
-                  'isAdmin'  =>TRUE,
-                  'galleries'=>Gallery::all(),
-                  'galleryId'=>$galleryId
-                )
-            );
+            try {
+                $gallery = Gallery::findOrFail($galleryId);
+                if ($gallery->photos->count() < 1) {
+                    return Redirect::to('/admin/galleryAction')
+                        ->with('flash_message', 'No photos to modify!');
+                }
+                return View::make(
+                    'admin_modify_photo',
+                    array(
+                      'isGal'    =>FALSE,
+                      'isHome'   =>FALSE,
+                      'isAbout'  =>FALSE,
+                      'isLogin'  =>FALSE,
+                      'isSignup' =>FALSE,
+                      'isAdmin'  =>TRUE,
+                      'galleries'=>Gallery::all(),
+                      'galleryId'=>$galleryId
+                    )
+                );
+            } catch (Exception $e) {
+                return Redirect::to('/admin/galleryAction')
+                    ->with('flash_message', 'Problem accessing gallery!');
+            }
+
         }
     )
 );
