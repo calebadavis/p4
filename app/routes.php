@@ -295,38 +295,47 @@ Route::post(
  
             if( $validation->passes() ) {
  
-                $gallery = Gallery::find($galleryId);
+                try {
 
-                $photo = new Photo();
-                $photo->caption = Input::get('caption');
-                $photo->gallery_id = $galleryId;
+                    $gallery = Gallery::find($galleryId);
 
-                /*
-                 * Handle the main image file:
-                 */
-                $filename = Input::file('image')->getClientOriginalName();
-                Input::file('image')->move(base_path() . "/public/images", $filename);
-                $photo->file = $filename;
+                    $photo = new Photo();
+                    $photo->caption = Input::get('caption');
+                    $photo->gallery_id = $galleryId;
 
-                /*
-                 * Handle the thumbnail:
-                 */
-                $filename = Input::file('thumb')->getClientOriginalName();
-                Input::file('thumb')->move(base_path() . "/public/images", $filename);
-                $photo->thumb = $filename;
+                    /*
+                     * Handle the main image file:
+                     */
+                    $filename = Input::file('image')->getClientOriginalName();
+                    Input::file('image')->move(base_path() . "/public/images", $filename);
+                    $photo->file = $filename;
 
+                    /*
+                     * Handle the thumbnail:
+                     */
+                    $filename = Input::file('thumb')->getClientOriginalName();
+                    Input::file('thumb')->move(base_path() . "/public/images", $filename);
+                    $photo->thumb = $filename;
 
-                $photo->save();
+                    $photo->save();
 
-                if ($gallery->restricted) {
-                    $userList = Input::get('userList');
-                    $photo->users()->attach($userList);
+                    if ($gallery->restricted) {
+                        $userList = Input::get('userList');
+                        $photo->users()->attach($userList);
+                    }
+
+                } catch (Exception $e) {
+                    return Redirect::to('/admin/newPhoto/' . $galleryId)
+                        ->with('flash_message', 'Failed to publish photo: ' . $e->getMessage())
+                        ->withInput();
                 }
 
-                return Redirect::to('/');
+                return Redirect::to('/admin/newPhoto/' . $galleryId)
+                        ->with('flash_message', 'Photo published!');
 
             } else {
-                return Redirect::to('admin/newPhoto')
+                return Redirect::to('/admin/newPhoto/' . $galleryId)
+                    ->with('flash_message', 'Invalid image/thumbnail')
                     ->withErrors($validation)
                     ->withInput();
             }
@@ -386,12 +395,16 @@ Route::post(
     array(
         'before' => 'csrf|auth|adminUser',
         function() {
-
+            try {
                 $photo = Photo::find(Input::get("photoId"));
                 $photo->users()->detach();
 		$photo->delete();
-
-                return Redirect::to('/');
+            } catch (Exception $e) {
+                    return Redirect::to('/admin/deletePhoto/' . $galleryId)
+                        ->with('flash_message', 'Failed to delete photo: ' . $e->getMessage())
+                        ->withInput();
+            }
+            return Redirect::to('/admin/galleryAction');
 
         }
     )
