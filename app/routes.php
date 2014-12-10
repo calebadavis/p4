@@ -397,30 +397,42 @@ Route::get('/admin/deletePhoto/{galleryId}',
     array(
         'before' => 'auth|adminUser',
         function($galleryId) {
-            return View::make(
-                'admin_delete_photo',
-                array(
-                  'isGal'    =>FALSE,
-                  'isHome'   =>FALSE,
-                  'isAbout'  =>FALSE,
-                  'isLogin'  =>FALSE,
-                  'isSignup' =>FALSE,
-                  'isAdmin'  =>TRUE,
-                  'galleries'=>Gallery::all(),
-                  'galleryId'=>$galleryId
-                )
-            );
+            try {
+                $gallery = Gallery::findOrFail($galleryId);
+                if ($gallery->photos->count() < 1) {
+                    return Redirect::to('/admin/galleryAction')
+                        ->with('flash_message', 'No photos to delete!');
+                }
+                return View::make(
+                    'admin_delete_photo',
+                    array(
+                      'isGal'    =>FALSE,
+                      'isHome'   =>FALSE,
+                      'isAbout'  =>FALSE,
+                      'isLogin'  =>FALSE,
+                      'isSignup' =>FALSE,
+                      'isAdmin'  =>TRUE,
+                      'galleries'=>Gallery::all(),
+                      'galleryId'=>$galleryId
+                    )
+                );
+            } catch (Exception $e) {
+                return Redirect::to('/admin/galleryAction')
+                    ->with('flash_message', 'Problem accessing gallery!');
+            }
         }
     )
 );
 
 Route::post(
-    '/admin/deletePhoto/{galleryId}',
+    '/admin/deletePhoto',
     array(
         'before' => 'csrf|auth|adminUser',
-        function($galleryId) {
+        function() {
             try {
                 $photo = Photo::find(Input::get("photoId"));
+
+                $galleryId = $photo->gallery_id;
 
                 /* Delete the main photo image file: */
                 $filename = $photo->file;
