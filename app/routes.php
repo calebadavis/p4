@@ -295,6 +295,8 @@ Route::post(
  
             if( $validation->passes() ) {
  
+                echo "Validation passed.";
+
                 try {
 
                     $gallery = Gallery::find($galleryId);
@@ -334,9 +336,9 @@ Route::post(
                         ->with('flash_message', 'Photo published!');
 
             } else {
+                echo "Validation Failed";
                 return Redirect::to('/admin/newPhoto/' . $galleryId)
                     ->with('flash_message', 'Invalid image/thumbnail')
-                    ->withErrors($validation)
                     ->withInput();
             }
         }
