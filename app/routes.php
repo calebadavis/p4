@@ -11,38 +11,396 @@
 |
 */
 
-Route::get('/', function()
-{
-        $galleries = Gallery::all();
-        return View::make(
-            'index', 
-             array(
-               'galleries'=>$galleries,
-               'isGal'=>FALSE,
-               'isHome'=>TRUE,
-               'isAbout'=>FALSE
-             )
-        );
+Route::get('/', function() {
+    $galleries = Gallery::all();
+    return View::make(
+        'index', 
+        array(
+            'isGal'    =>FALSE,
+            'isHome'   =>TRUE,
+            'isAbout'  =>FALSE,
+            'isLogin'  =>FALSE,
+            'isSignup' =>FALSE,
+            'isAdmin'  =>FALSE,
+            'galleries'=>$galleries
+        )
+    );
 
 });
 
-Route::get('about', function()
-{
-        $galleries = Gallery::all();
-        return View::make(
-            'about', 
-             array(
-               'galleries'=>$galleries,
-               'isGal'=>FALSE,
-               'isHome'=>FALSE,
-               'isAbout'=>TRUE
-             )
-        );
+Route::get('about', function() {
+    $galleries = Gallery::all();
+    return View::make(
+        'about', 
+        array(
+            'isGal'    =>FALSE,
+            'isHome'   =>FALSE,
+            'isAbout'  =>TRUE,
+            'isLogin'  =>FALSE,
+            'isSignup' =>FALSE,
+            'isAdmin'  =>FALSE,
+            'galleries'=>$galleries
+        )
+    );
 
 });
 
 
+/**
+ * Display a particular photo gallery (by id).
+ */
 Route::get('gallery/{id}', 'GalleryController@display');
+
+
+/**
+ * Display the new user signup form
+ * (not allowed if already signed in)
+ */
+Route::get('/signup',
+    array(
+        'before' => 'guest',
+        function() {
+            $galleries = Gallery::all();
+            return View::make(
+                'signup', 
+                array(
+                  'isGal'    =>FALSE,
+                  'isHome'   =>FALSE,
+                  'isAbout'  =>FALSE,
+                  'isLogin'  =>FALSE,
+                  'isSignup' =>TRUE,
+                  'isAdmin'  =>FALSE,
+                  'galleries'=>$galleries
+                )
+            );
+        }
+    )
+);
+
+/**
+ * Process the submission of a new user signup
+ * (see the get route for '/signup' and the view 'signup')
+ */
+Route::post('/signup', 
+    array(
+        'before' => 'csrf', 
+        function() {
+
+            $user = new User();
+            $user->email    = Input::get('email');
+            $user->password = Hash::make(Input::get('password'));
+            $user->first_name = Input::get('first_name');
+            $user->last_name = Input::get('last_name');
+            # Try to add the user 
+            try {
+                $user->save();
+            }
+            # Fail
+            catch (Exception $e) {
+                return Redirect::to('/signup')->with('flash_message', 'Sign up failed; please try again.')->withInput();
+            }
+
+            # Log the user in
+            Auth::login($user);
+
+            return Redirect::to('/')->with('flash_message', 'Welcome to Lily Sprite Images!');
+
+        }
+    )
+);
+
+/**
+ * Display the user login form
+ * (not allowed if already logged-in)
+ */
+Route::get('/login',
+    array(
+        'before' => 'guest',
+        function() {
+            $galleries = Gallery::all();
+            return View::make(
+                'login',
+                array(
+                  'isGal'    =>FALSE,
+                  'isHome'   =>FALSE,
+                  'isAbout'  =>FALSE,
+                  'isLogin'  =>TRUE,
+                  'isSignup' =>FALSE,
+                  'isAdmin'  =>FALSE,
+                  'galleries'=>$galleries
+                )
+            );
+        }
+    )
+);
+
+/**
+ * Process the submission of login
+ * (see the get route for '/login' and the view 'login')
+ */
+
+Route::post('/login', 
+    array(
+        'before' => 'csrf', 
+        function() {
+
+            $credentials = Input::only('email', 'password');
+
+            if (Auth::attempt($credentials, $remember = true)) {
+                return Redirect::intended('/')->with('flash_message', 'Welcome Back!');
+            }
+            else {
+                return Redirect::to('/login')->with('flash_message', 'Log in failed; please try again.');
+            }
+
+            return Redirect::to('login');
+        }
+    )
+);
+
+/**
+ * Log current user out - no need for form UI, 
+ * just an Auth call and redirect
+ */
+Route::get('/logout', function() {
+
+    # Log out
+    Auth::logout();
+
+    # Send them to the homepage
+    return Redirect::to('/')->with('flash_message', 'Logged-out!');
+
+});
+
+
+/**
+ * To initiate an admin function (create/modify/delete photo),
+ * bring up the admin gallery selection page.
+ * This route uses the 'auth' filter to ensure a logged-in user, and
+ * the custom 'adminUser' filter to ensure that user is an admin
+ */
+Route::get('/admin/galleryAction',
+    array(
+        'before' => 'auth|adminUser',
+        function() {
+            $galleries = Gallery::all();
+            return View::make(
+                'admin_gallery_select',
+                array(
+                  'isGal'    =>FALSE,
+                  'isHome'   =>FALSE,
+                  'isAbout'  =>FALSE,
+                  'isLogin'  =>FALSE,
+                  'isSignup' =>FALSE,
+                  'isAdmin'  =>TRUE,
+                  'galleries'=>$galleries
+                )
+            );
+        }
+    )
+);
+
+/**
+ * Process post data from submission of the main admin 'select gallery'
+ * view. 
+ */
+Route::post(
+    '/admin/galleryAction',
+    array(
+        'before' => 'csrf|auth|adminUser', 
+        function() {
+            $galleryId = Input::get("gallery");
+            $action = Input::get("action");
+            if ($action == "new") {
+                return Redirect::to('/admin/newPhoto/' . $galleryId);
+            } else if ($action == "modify") {
+                return Redirect::to('/admin/modifyPhoto/' . $galleryId);
+            } else if ($action == "delete") {
+                return Redirect::to('/admin/deletePhoto/' . $galleryId);
+            }
+        }
+    )
+);
+
+/**
+ * Admin route to manipulate a photo in a specific gallery.
+ */
+Route::get('/admin/modifyPhoto/{galleryId}',
+    array(
+        'before' => 'auth|adminUser',
+        function($galleryId) {
+            return View::make(
+                'admin_modify_photo',
+                array(
+                  'isGal'    =>FALSE,
+                  'isHome'   =>FALSE,
+                  'isAbout'  =>FALSE,
+                  'isLogin'  =>FALSE,
+                  'isSignup' =>FALSE,
+                  'isAdmin'  =>TRUE,
+                  'galleries'=>Gallery::all(),
+                  'galleryId'=>$galleryId
+                )
+            );
+        }
+    )
+);
+
+/**
+ * Admin route to create a new photo in a specific gallery.
+ */
+Route::get('/admin/newPhoto/{galleryId}',
+    array(
+        'before' => 'auth|adminUser',
+        function($galleryId) {
+            return View::make(
+                'admin_new_photo',
+                array(
+                  'isGal'    =>FALSE,
+                  'isHome'   =>FALSE,
+                  'isAbout'  =>FALSE,
+                  'isLogin'  =>FALSE,
+                  'isSignup' =>FALSE,
+                  'isAdmin'  =>TRUE,
+                  'galleries'=>Gallery::all(),
+                  'galleryId'=>$galleryId
+                )
+            );
+        }
+    )
+);
+
+Route::post(
+    '/admin/newPhoto/{galleryId}',
+    array(
+        'before' => 'csrf|auth|adminUser',
+        function($galleryId) {
+
+            echo "GalleryId: " . $galleryId;
+
+            /*
+	     * Validate
+	     */
+	    $rules = array(
+                'image' => 'image',
+                'thumb' => 'image'
+            );
+ 
+            $inputs = array(
+                'image' => Input::file('image'),
+                'thumb' => Input::file('thumb')
+            );
+
+            $validation = Validator::make($inputs, $rules);
+ 
+            if( $validation->passes() ) {
+ 
+                $gallery = Gallery::find($galleryId);
+
+                $photo = new Photo();
+                $photo->caption = Input::get('caption');
+                $photo->gallery_id = $galleryId;
+
+                /*
+                 * Handle the main image file:
+                 */
+                $filename = Input::file('image')->getClientOriginalName();
+                Input::file('image')->move(base_path() . "/public/images", $filename);
+                $photo->file = $filename;
+
+                /*
+                 * Handle the thumbnail:
+                 */
+                $filename = Input::file('thumb')->getClientOriginalName();
+                Input::file('thumb')->move(base_path() . "/public/images", $filename);
+                $photo->thumb = $filename;
+
+
+                $photo->save();
+
+                if ($gallery->restricted) {
+                    $userList = Input::get('userList');
+                    $photo->users()->attach($userList);
+                }
+
+                return Redirect::to('/');
+
+            } else {
+                return Redirect::to('admin/newPhoto')
+                    ->withErrors($validation)
+                    ->withInput();
+            }
+        }
+    )
+);
+
+Route::post(
+    '/admin/modifyPhoto',
+    array(
+        'before' => 'csrf|auth|adminUser',
+        function() {
+
+                $photo = Photo::find(Input::get("photoId"));
+
+                $photo->caption = Input::get('caption');
+
+                $photo->save();
+
+                if ($photo->gallery->restricted) {
+                    $userList = Input::get('userList');
+                    $photo->users()->attach($userList);
+                }
+
+                return Redirect::to('/');
+
+        }
+    )
+);
+
+/**
+ * Admin route to select and delete a photo from a specific gallery.
+ */
+Route::get('/admin/deletePhoto/{galleryId}',
+    array(
+        'before' => 'auth|adminUser',
+        function($galleryId) {
+            return View::make(
+                'admin_delete_photo',
+                array(
+                  'isGal'    =>FALSE,
+                  'isHome'   =>FALSE,
+                  'isAbout'  =>FALSE,
+                  'isLogin'  =>FALSE,
+                  'isSignup' =>FALSE,
+                  'isAdmin'  =>TRUE,
+                  'galleries'=>Gallery::all(),
+                  'galleryId'=>$galleryId
+                )
+            );
+        }
+    )
+);
+
+Route::post(
+    '/admin/deletePhoto',
+    array(
+        'before' => 'csrf|auth|adminUser',
+        function() {
+
+                $photo = Photo::find(Input::get("photoId"));
+                $photo->users()->detach();
+		$photo->delete();
+
+                return Redirect::to('/');
+
+        }
+    )
+);
+
+
+
+
+
 
 /**
  * Administrative actions on photos in a gallery are handled implicitly

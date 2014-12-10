@@ -1,59 +1,58 @@
-<!--app/views/new_photo.blade.php-->
+<!--app/views/admin_new_photo.blade.php-->
 
 <?php
-    $galleryList = array();
-    foreach ($galleries as $gallery) {
-        $galleryList[$gallery->id] = $gallery->name;
+    $gallery = Gallery::find($galleryId);
+    if ($gallery->restricted) {
+        $users = User::all();
     }
 ?>
 
-<!doctype html>
-<html lang="en">
- <head>
-  <meta charset="UTF-8">
+@extends("_master")
+
+@section("title")
+   Upload Photo
+@stop
+
+@section("head")
+@if($gallery->restricted)
+  {{ HTML::script("//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js") }}
+  {{ HTML::script('js/jquery.multi-select.js') }}
   {{ HTML::style('css/multi-select.css') }}
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" type="text/javascript"></script>
 
     <script type="text/javascript">
       $(document).ready(function() {
         $('#userList').multiSelect();
       });
     </script>
+@endif
+@stop
 
-
-  <title>
-   Upload File
-  </title>
- </head>
- <body>
-
-  {{ Form::open(array('action'=>'PhotoController@postNew', 'files'=>TRUE)) }}
-
+@section("content")
+  {{ Form::open(array("url"=>"/admin/newPhoto/".$galleryId, 'files'=>TRUE)) }}
+@if($gallery->restricted)
     <select multiple="multiple" id="userList" name="userList[]">
 
-      @foreach ($users as $user)
+      @foreach (User::all() as $user)
       <option value='{{$user->id}}'>{{$user->email}}</option> 
       @endforeach
 
     </select>
 
-    {{ HTML::script('js/jquery.multi-select.js') }}
-
-  
-  {{ Form::label('gallery', 'Gallery:') }}
-  {{ Form::select('gallery', $galleryList) }}
   <br/>
-
+@endif
   {{ Form::label('caption', 'Caption:') }}
   {{ Form::text('caption') }}
+
   <br/>
 
   {{ Form::label('image','Image:') }}
   {{ Form::file('image') }}
+
   <br/>
 
   {{ Form::label('thumb','Thumb:') }}
   {{ Form::file('thumb') }}
+
   <br/>
 
   <!-- submit buttons -->
@@ -63,5 +62,4 @@
   {{ Form::reset('Reset') }}
   
   {{ Form::close() }}
- </body>
-</html>
+@stop

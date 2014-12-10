@@ -7,6 +7,9 @@
     @yield("head")
   </head>
   <body>
+@if(Session::get('flash_message'))
+    <div class='flash-message'>{{ Session::get('flash_message') }}</div>
+@endif
     <img id="top_image" src="/images/Title.png" alt="Lily Sprite Photography Main Image"/>
     <hr id="begin-site-nav"/>
     <nav id="site-nav">
@@ -20,6 +23,7 @@
           <a href="/">Home</a>
         </li>
 @foreach ($galleries as $gal)
+@if ( !($gal->restricted) || (Auth::check())) 
         <li 
           id="{{$gal->name}}" 
 @if ($isGal)
@@ -30,6 +34,7 @@
         >
           <a href="/gallery/{{$gal->id}}">{{$gal->name}}</a>
         </li>
+@endif
 @endforeach
 	<li 
           id="About"
@@ -37,8 +42,41 @@
             class="youarehere"
 @endif
         >
-          <a href="/about">About Me</a>
+          <a href="/about">About Lily</a>
         </li>
+        <li
+@if(Auth::check())
+          id="Logout"
+        >
+          <a href='/logout'>Log out {{ Auth::user()->email; }}</a>
+        </li>
+@else
+          id="Signup"
+@if ($isSignup)
+          class="youarehere"
+@endif
+        > 
+          <a href='/signup'>Sign up</a>
+        </li>
+        <li 
+          id="Log In"
+@if ($isLogin)
+          class="youarehere"
+@endif
+        >
+          <a href='/login'>Log in</a>
+        </li>
+@endif
+@if (Auth::check() && Auth::user()->admin)
+	<li 
+          id="Admin"
+@if ($isAdmin)
+            class="youarehere"
+@endif
+        >
+          <a href="/admin/galleryAction">Admin</a>
+        </li>
+@endif
       </ul>
     </nav>
 

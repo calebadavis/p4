@@ -85,7 +85,7 @@ class PhotoController extends BaseController {
             }
 
         } else {
-            return Redirect::to('photo/new')
+            return Redirect::to('admin/newPhoto')
                 ->withErrors($validation)
                 ->withInput();
         }

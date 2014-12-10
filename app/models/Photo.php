@@ -21,4 +21,21 @@ class Photo extends Eloquent {
 
     }
 
+    /**
+     * Determine if the user is allowed to view the photo
+     */
+    public function permitted($user) {
+        $ret = TRUE;
+        if ($this->gallery->restricted) {
+            $ret = FALSE;
+            foreach($this->users as $candidate) {
+                if ($candidate->id == $user->id) {
+                    $ret = TRUE;
+                    break;
+                }
+            }
+        }
+        return $ret;
+    }
+
 }

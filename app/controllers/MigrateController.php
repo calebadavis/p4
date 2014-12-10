@@ -70,6 +70,7 @@ class MigrateController extends BaseController {
         $user->password = Hash::make('dummy');
         $user->first_name = "Lily";
         $user->last_name = "Dolan";
+        $user->admin = TRUE;
         $user->save();
 
         $user = new User();

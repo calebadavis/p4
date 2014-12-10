@@ -20,21 +20,20 @@ class GalleryController extends BaseController {
                 $gallery=$gal;
                 break;
             }
-
         }
 
         return View::make(
             'gallery', 
              array(
-               'isGal'=>TRUE,
-               'isHome'=>FALSE,
-               'isAbout'=>FALSE,
-               'gallery'=>$gallery,
-               'galleries'=>$galleries
+                 'isGal'   =>TRUE,
+                 'isHome'  =>FALSE,
+                 'isAbout' =>FALSE,
+                 'isLogin' =>FALSE,
+                 'isSignup'=>FALSE,
+                 'isAdmin' =>FALSE,
+                 'gallery'=>$gallery,
+                 'galleries'=>$galleries
              )
         );
-
-
     }
-
 }

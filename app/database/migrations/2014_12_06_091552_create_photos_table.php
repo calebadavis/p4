@@ -15,8 +15,8 @@ class CreatePhotosTable extends Migration {
                 Schema::create('photos', function($table) {
 
                     $table->increments('id');
-		    $table->string('file');
-		    $table->string('thumb');
+		    $table->string('file')->unique();
+		    $table->string('thumb')->unique();
                     $table->string('caption');
                     $table->timestamps();
 		    $table->integer('gallery_id')->unsigned();

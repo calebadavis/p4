@@ -30,12 +30,14 @@
 
     <ul class="gallery">
       @foreach($gallery->photos as $photo)
+      @if ($photo->permitted(Auth::user()))
       <li>
         <a href="/images/{{$photo->file}}" title="{{$photo->caption}}" data-fancybox-group="{{$gallery->name}}_slides">
           <img src="/images/{{$photo->thumb}}" alt="{{$photo->caption}}"/>
           <br/>{{$photo->caption}}
         </a>
       </li>
+      @endif
       @endforeach
     </ul>
 @stop
