@@ -415,10 +415,10 @@ Route::get('/admin/deletePhoto/{galleryId}',
 );
 
 Route::post(
-    '/admin/deletePhoto',
+    '/admin/deletePhoto/{galleryId}',
     array(
         'before' => 'csrf|auth|adminUser',
-        function() {
+        function($galleryId) {
             try {
                 $photo = Photo::find(Input::get("photoId"));
 
