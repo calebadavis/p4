@@ -421,15 +421,39 @@ Route::post(
         function() {
             try {
                 $photo = Photo::find(Input::get("photoId"));
+
+                /* Delete the main photo image file: */
+                $filename = $photo->file;
+                try {
+
+                    File::delete(public_path() . "/images/" . $filename);
+
+                } catch (Exception $e) {
+                    /* File delete failure is not catastrophic - keep deleting if possible */
+                }
+
+		/* Delete the thumbnail image file */
+                $filename = $photo->thumb;
+                try {
+
+                    File::delete(public_path() . "/images/" . $filename);
+
+                } catch (Exception $e) {
+                    /* Thumbnail delete failure is not catastrophic - keep deleting if possible */
+                }
+
                 $photo->users()->detach();
 		$photo->delete();
+
             } catch (Exception $e) {
+
                     return Redirect::to('/admin/deletePhoto/' . $galleryId)
                         ->with('flash_message', 'Failed to delete photo: ' . $e->getMessage())
                         ->withInput();
             }
-            return Redirect::to('/admin/galleryAction');
 
+            return Redirect::to('/admin/deletePhoto/' . $galleryId)
+                ->with('flash_message', 'Photo deleted!');
         }
     )
 );
