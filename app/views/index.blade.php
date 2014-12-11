@@ -6,7 +6,7 @@
       <section id="galleries">
 
 @foreach (Gallery::all() as $gallery)
-@if(( !($gallery->restricted)) || (Auth::check()) )
+@if(( !($gallery->restricted || $gallery->mature)) || (Auth::check()) )
 <a href="/gallery/{{$gallery->id}}"><img src="images/{{$gallery->image}}" alt="{{$gallery->fullName}} example"/></a><br/>
 @endif
 @endforeach
