@@ -23,7 +23,7 @@
           <a href="/">Home</a>
         </li>
 @foreach ($galleries as $gal)
-@if ( !($gal->restricted) || (Auth::check())) 
+@if ( !($gal->restricted || $gal->mature) || (Auth::check())) 
         <li 
           id="{{$gal->name}}" 
 @if ($navInfo["gal"])

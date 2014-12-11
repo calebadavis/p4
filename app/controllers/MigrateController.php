@@ -70,13 +70,20 @@ class MigrateController extends BaseController {
             $this->_migrateCSV($attribs[0], $galName, $attribs[1], $attribs[2]);
         }
 
-        // Don't forget the restricted gallery!
+        // Don't forget the restricted and 18+ galleries!
         $restricted = new Gallery();
         $restricted->name = "Restricted";
         $restricted->fullName = "Restricted Images";
         $restricted->image = "MainButtonsRestricted.png";
         $restricted->restricted = TRUE;
         $restricted->save();
+
+        $mature = new Gallery();
+        $mature->name = "Mature";
+        $mature->fullName = "Mature images, 18+ only please";
+        $mature->image = "MainButtons18.png";
+        $mature->mature = TRUE;
+        $mature->save();
 
         // For testing purposes, add a couple users:
 

@@ -26,6 +26,7 @@
     Password:<br>
     {{ Form::password('password') }}<br><br>
 
+    By clicking the 'Submit' button, I affirm I am at least 18 years of age
     {{ Form::submit('Submit') }}
 
 {{ Form::close() }}

@@ -18,6 +18,7 @@ class CreateGalleriesTable extends Migration {
                         $table->string('fullName');
                         $table->string('image');
 			$table->boolean('restricted')->default(FALSE);
+                        $table->boolean('mature')->default(FALSE);
 			$table->timestamps();
 		});
 

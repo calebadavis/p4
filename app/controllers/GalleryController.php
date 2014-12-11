@@ -22,6 +22,10 @@ class GalleryController extends BaseController {
             }
         }
 
+        if($gallery->mature) {
+            if (!Auth::check()) return Redirect::to('/');
+        }
+
         return View::make(
             'gallery', 
              array(
