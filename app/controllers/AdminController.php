@@ -109,89 +109,67 @@ class AdminController extends BaseController {
 
     public function postNewPhoto($galleryId) {
 
+        $imageFile = Input::file('file');
+        $thumbFile = Input::file('thumb');
+        $imageFname = $imageFile->getClientOriginalName();
+        $thumbFname = $thumbFile->getClientOriginalName();
+
         /* Validation: */
 	$rules = array(
-            'image' => 'image',
-            'thumb' => 'image'
+            'file' => 'image|required|unique:photos',
+            'thumb' => 'image|required|unique:photos',
+            'filename' => 'unique:photos,file',
+            'thumbname' => 'unique:photos,thumb'
         );
  
         $inputs = array(
-            'image' => Input::file('image'),
-            'thumb' => Input::file('thumb')
+            'file' => $imageFile,
+            'thumb' => $thumbFile,
+            'filename' => $imageFname,
+            'thumbname' => $thumbFname
         );
 
         $validation = Validator::make($inputs, $rules);
  
-        if( $validation->passes() ) {
+        if( $validation->fails() ) {
+            return Redirect::to('/admin/newPhoto/' . $galleryId)
+                ->with('flash_message', 'Invalid image/thumbnail')
+                ->withInput()
+                ->withErrors($validation);
+        }
 
-             try {
+        try {
 
-                $gallery = Gallery::find($galleryId);
+            $gallery = Gallery::find($galleryId);
 
-                $photo = new Photo();
-                $photo->caption = Input::get('caption');
-                $photo->gallery_id = $galleryId;
+            $photo = new Photo();
+            $photo->caption = Input::get('caption');
+            $photo->gallery_id = $galleryId;
 
-                /* Handle the main image file: */
-                $filename = Input::file('image')->getClientOriginalName();
+            /* Handle the main image file: */
+            Input::file('file')->move(base_path() . "/public/images", $imageFname);
+            $photo->file = $imageFname;
 
-                try {
+            /* Handle the thumbnail: */
+            Input::file('thumb')->move(base_path() . "/public/images", $thumbFname);
+            $photo->thumb = $thumbFname;
 
-                    /* Should throw exception */
-                    Photo::where('file', '=', $filename)->firstOrFail();
+            $photo->save();
 
-                    /* Reaching this line means there's already a photo with that filename */
-                    return Redirect::to('/admin/newPhoto/' . $galleryId)
-                        ->with('flash_message', 'Publish failed: Photo "' . $filename . '" already exists.')
-                        ->withInput();
-
-                } catch (Exception $e) {
-                }
-
-                Input::file('image')->move(base_path() . "/public/images", $filename);
-                $photo->file = $filename;
-
-                /* Handle the thumbnail: */
-                $filename = Input::file('thumb')->getClientOriginalName();
-
-                try {
-
-                    /* Should throw exception */
-                    Photo::where('thumb', '=', $filename)->firstOrFail();
-
-                    /* Reaching this line means there's already a photo with that filename */
-                    return Redirect::to('/admin/newPhoto/' . $galleryId)
-                        ->with('flash_message', 'Publish failed: Photo already exists with thumbnail "' . $filename . '"')
-                        ->withInput();
-
-                } catch (Exception $e) {
-                }
-
-                Input::file('thumb')->move(base_path() . "/public/images", $filename);
-                $photo->thumb = $filename;
-
-                $photo->save();
-
-                if ($gallery->restricted) {
-                    $userList = Input::get('userList');
-                    $photo->users()->attach($userList);
-                }
-
-            } catch (Exception $e) {
-                return Redirect::to('/admin/newPhoto/' . $galleryId)
-                    ->with('flash_message', 'Failed to publish photo: ' . $e->getMessage())
-                    ->withInput();
+            if ($gallery->restricted) {
+                $userList = Input::get('userList');
+                $photo->users()->attach($userList);
             }
 
             return Redirect::to('/admin/newPhoto/' . $galleryId)
                 ->with('flash_message', 'Photo published!');
 
-        } else {
-
+        } catch (Exception $e) {
             return Redirect::to('/admin/newPhoto/' . $galleryId)
-                ->with('flash_message', 'Invalid image/thumbnail')
+                ->with('flash_message', 'Failed to publish photo: ' . $e->getMessage())
                 ->withInput();
         }
+
     }
 
     public function getDeletePhoto($galleryId) {

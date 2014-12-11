@@ -28,8 +28,22 @@
 @stop
 
 @section("content")
+
+@if($errors->count() > 0)
+<fieldset><legend>Submission errors:</legend>
+@foreach($errors->all() as $message)
+	<div class='error'>{{ $message }}</div>
+@endforeach
+</fieldset>
+@endif
+
   {{ Form::open(array("url"=>"/admin/newPhoto/".$galleryId, 'files'=>TRUE)) }}
+
+<fieldset><legend>New Image details:</legend>
+
 @if($gallery->restricted)
+
+    {{ Form::label('userList', 'Permitted Users:') }}
     <select multiple="multiple" id="userList" name="userList[]">
 
       @foreach (User::all() as $user)
@@ -40,13 +54,14 @@
 
   <br/>
 @endif
+
   {{ Form::label('caption', 'Caption:') }}
   {{ Form::text('caption') }}
 
   <br/>
 
-  {{ Form::label('image','Image:') }}
-  {{ Form::file('image') }}
+  {{ Form::label('file','Image:') }}
+  {{ Form::file('file') }}
 
   <br/>
 
@@ -54,7 +69,7 @@
   {{ Form::file('thumb') }}
 
   <br/>
-
+</fieldset>
   <!-- submit buttons -->
   {{ Form::submit('Upload') }}
   

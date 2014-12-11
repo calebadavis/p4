@@ -52,16 +52,7 @@ Route::get('gallery/{id}', 'GalleryController@display');
 Route::get('/signup',
     array(
         'before' => 'guest',
-        function() {
-            $galleries = Gallery::all();
-            return View::make(
-                'signup', 
-                array(
-                  'navInfo'=>Gallery::navInfo("signup"),
-                  'galleries'=>$galleries
-                )
-            );
-        }
+        'uses' => 'UserController@getSignup'
     )
 );
 
@@ -69,31 +60,11 @@ Route::get('/signup',
  * Process the submission of a new user signup
  * (see the get route for '/signup' and the view 'signup')
  */
-Route::post('/signup', 
+Route::post(
+    '/signup', 
     array(
         'before' => 'csrf', 
-        function() {
-
-            $user = new User();
-            $user->email    = Input::get('email');
-            $user->password = Hash::make(Input::get('password'));
-            $user->first_name = Input::get('first_name');
-            $user->last_name = Input::get('last_name');
-            # Try to add the user 
-            try {
-                $user->save();
-            }
-            # Fail
-            catch (Exception $e) {
-                return Redirect::to('/signup')->with('flash_message', 'Sign up failed; please try again.')->withInput();
-            }
-
-            # Log the user in
-            Auth::login($user);
-
-            return Redirect::to('/')->with('flash_message', 'Welcome to Lily Sprite Images!');
-
-        }
+        'uses' => 'UserController@postSignup'
     )
 );
 
@@ -101,19 +72,11 @@ Route::post('/signup',
  * Display the user login form
  * (not allowed if already logged-in)
  */
-Route::get('/login',
+Route::get(
+    '/login',
     array(
         'before' => 'guest',
-        function() {
-            $galleries = Gallery::all();
-            return View::make(
-                'login',
-                array(
-                  'navInfo'=>Gallery::navInfo("login"),
-                  'galleries'=>$galleries
-                )
-            );
-        }
+        'uses' => 'UserController@getLogin'
     )
 );
 
@@ -125,19 +88,7 @@ Route::get('/login',
 Route::post('/login', 
     array(
         'before' => 'csrf', 
-        function() {
-
-            $credentials = Input::only('email', 'password');
-
-            if (Auth::attempt($credentials, $remember = true)) {
-                return Redirect::intended('/')->with('flash_message', 'Welcome Back!');
-            }
-            else {
-                return Redirect::to('/login')->with('flash_message', 'Log in failed; please try again.');
-            }
-
-            return Redirect::to('login');
-        }
+        'uses' => 'UserController@postLogin'
     )
 );
 
@@ -145,16 +96,7 @@ Route::post('/login',
  * Log current user out - no need for form UI, 
  * just an Auth call and redirect
  */
-Route::get('/logout', function() {
-
-    # Log out
-    Auth::logout();
-
-    # Send them to the homepage
-    return Redirect::to('/')->with('flash_message', 'Logged-out!');
-
-});
-
+Route::get('/logout', 'UserController@getLogout');
 
 Route::get(
     '/admin/galleryAction', 
@@ -250,26 +192,3 @@ Route::get('mysql-test', function() {
 
 });
 
-Route::get('/crud-test', function() {
-
-	$gallery = new Gallery();
-	$gallery->name = "Foo Gallery";
-	$gallery->save();
-
-	$photo = new Photo();
-        $photo->file = "images/pic1.jpg";
-        $photo->thumb = "images/pic1_thumb.jpg";
-        $photo->caption = "Photographer: Lily<br/>Model: Kathy Ireland";
-        $photo->gallery_id = $gallery->id;
-	$photo->save();
-
-        $photo = Photo::first();
-        $gallery = $photo->gallery;
-
-	echo $photo->file."<br/>";
-        echo $photo->thumb."<br/>";
-	echo $photo->caption."<br/>";
-        echo $gallery->name."<br/>";
-        $photo->delete();
-	$gallery->delete();
-});
