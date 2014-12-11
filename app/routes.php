@@ -11,28 +11,31 @@
 |
 */
 
+
+/*
+ * Main index page
+ */
 Route::get('/', function() {
-    $galleries = Gallery::all();
     return View::make(
         'index', 
         array(
             'navInfo'=>Gallery::navInfo("home"),
-            'galleries'=>$galleries
+            'galleries'=>Gallery::all()
         )
     );
-
 });
 
+/*
+ * 'About Lily' bio page
+ */
 Route::get('about', function() {
-    $galleries = Gallery::all();
     return View::make(
         'about', 
         array(
             'navInfo'=>Gallery::navInfo("about"),
-            'galleries'=>$galleries
+            'galleries'=>Gallery::all()
         )
     );
-
 });
 
 
@@ -153,77 +156,39 @@ Route::get('/logout', function() {
 });
 
 
-/**
- * To initiate an admin function (create/modify/delete photo),
- * bring up the admin gallery selection page.
- * This route uses the 'auth' filter to ensure a logged-in user, and
- * the custom 'adminUser' filter to ensure that user is an admin
- */
-Route::get('/admin/galleryAction',
+Route::get(
+    '/admin/galleryAction', 
     array(
-        'before' => 'auth|adminUser',
-        function() {
-            $galleries = Gallery::all();
-            return View::make(
-                'admin_gallery_select',
-                array(
-                  'navInfo'=>Gallery::navInfo("admin"),
-                  'galleries'=>$galleries
-                )
-            );
-        }
+        'before' => 'auth|adminUser', 
+        'uses' => 'AdminController@getGalleryAction'
     )
 );
 
-/**
- * Process post data from submission of the main admin 'select gallery'
- * view. 
- */
 Route::post(
-    '/admin/galleryAction',
+    '/admin/galleryAction', 
     array(
-        'before' => 'csrf|auth|adminUser', 
-        function() {
-            $galleryId = Input::get("gallery");
-            $action = Input::get("action");
-            if ($action == "new") {
-                return Redirect::to('/admin/newPhoto/' . $galleryId);
-            } else if ($action == "modify") {
-                return Redirect::to('/admin/modifyPhoto/' . $galleryId);
-            } else if ($action == "delete") {
-                return Redirect::to('/admin/deletePhoto/' . $galleryId);
-            }
-        }
+        'before' => 'auth|adminUser',
+        'uses' => 'AdminController@postGalleryAction'
     )
 );
+
 
 /**
  * Admin route to manipulate a photo in a specific gallery.
  */
-Route::get('/admin/modifyPhoto/{galleryId}',
+Route::get(
+    '/admin/modifyPhoto/{galleryId}',
     array(
         'before' => 'auth|adminUser',
-        function($galleryId) {
-            try {
-                $gallery = Gallery::findOrFail($galleryId);
-                if ($gallery->photos->count() < 1) {
-                    return Redirect::to('/admin/galleryAction')
-                        ->with('flash_message', 'No photos to modify!');
-                }
-                return View::make(
-                    'admin_modify_photo',
-                    array(
-                      'navInfo'=>Gallery::navInfo("admin"),
-                      'galleries'=>Gallery::all(),
-                      'galleryId'=>$galleryId
-                    )
-                );
-            } catch (Exception $e) {
-                return Redirect::to('/admin/galleryAction')
-                    ->with('flash_message', 'Problem accessing gallery!');
-            }
+        'uses' => 'AdminController@getModifyPhoto'
+    )
+);
 
-        }
+Route::post(
+    '/admin/modifyPhoto',
+    array(
+        'before' => 'csrf|auth|adminUser',
+        'uses' => 'AdminController@postModifyPhoto'
     )
 );
 
@@ -233,16 +198,7 @@ Route::get('/admin/modifyPhoto/{galleryId}',
 Route::get('/admin/newPhoto/{galleryId}',
     array(
         'before' => 'auth|adminUser',
-        function($galleryId) {
-            return View::make(
-                'admin_new_photo',
-                array(
-                  'navInfo'=>Gallery::navInfo("admin"),
-                  'galleries'=>Gallery::all(),
-                  'galleryId'=>$galleryId
-                )
-            );
-        }
+        'uses' => 'AdminController@getNewPhoto'
     )
 );
 
@@ -250,119 +206,7 @@ Route::post(
     '/admin/newPhoto/{galleryId}',
     array(
         'before' => 'csrf|auth|adminUser',
-        function($galleryId) {
-
-            echo "GalleryId: " . $galleryId;
-
-            /*
-	     * Validate
-	     */
-	    $rules = array(
-                'image' => 'image',
-                'thumb' => 'image'
-            );
- 
-            $inputs = array(
-                'image' => Input::file('image'),
-                'thumb' => Input::file('thumb')
-            );
-
-            $validation = Validator::make($inputs, $rules);
- 
-            if( $validation->passes() ) {
- 
-                try {
-
-                    $gallery = Gallery::find($galleryId);
-
-                    $photo = new Photo();
-                    $photo->caption = Input::get('caption');
-                    $photo->gallery_id = $galleryId;
-
-                    /*
-                     * Handle the main image file:
-                     */
-                    $filename = Input::file('image')->getClientOriginalName();
-
-                    try {
-                        /* Should throw exception */
-                        Photo::where('file', '=', $filename)->firstOrFail();
-
-                        /* Reaching this line means there's already a photo with that filename */
-                        return Redirect::to('/admin/newPhoto/' . $galleryId)
-                            ->with('flash_message', 'Publish failed: File "' . $filename . '" already exists.')
-                            ->withInput();
-
-                    } catch (Exception $e) {
-                    }
-
-                    Input::file('image')->move(base_path() . "/public/images", $filename);
-                    $photo->file = $filename;
-
-                    /*
-                     * Handle the thumbnail:
-                     */
-                    $filename = Input::file('thumb')->getClientOriginalName();
-                    try {
-                        /* Should throw exception */
-                        Photo::where('thumb', '=', $filename)->firstOrFail();
-
-                        /* Reaching this line means there's already a photo with that filename */
-                        return Redirect::to('/admin/newPhoto/' . $galleryId)
-                            ->with('flash_message', 'Publish failed: File "' . $filename . '" already exists.')
-                            ->withInput();
-
-                    } catch (Exception $e) {
-                    }
-                    Input::file('thumb')->move(base_path() . "/public/images", $filename);
-                    $photo->thumb = $filename;
-
-                    $photo->save();
-
-                    if ($gallery->restricted) {
-                        $userList = Input::get('userList');
-                        $photo->users()->attach($userList);
-                    }
-
-                } catch (Exception $e) {
-                    return Redirect::to('/admin/newPhoto/' . $galleryId)
-                        ->with('flash_message', 'Failed to publish photo: ' . $e->getMessage())
-                        ->withInput();
-                }
-
-                return Redirect::to('/admin/newPhoto/' . $galleryId)
-                        ->with('flash_message', 'Photo published!');
-
-            } else {
-
-                return Redirect::to('/admin/newPhoto/' . $galleryId)
-                    ->with('flash_message', 'Invalid image/thumbnail')
-                    ->withInput();
-            }
-        }
-    )
-);
-
-Route::post(
-    '/admin/modifyPhoto',
-    array(
-        'before' => 'csrf|auth|adminUser',
-        function() {
-
-                $photo = Photo::find(Input::get("photoId"));
-
-                $photo->caption = Input::get('caption');
-
-                $photo->save();
-
-                if ($photo->gallery->restricted) {
-                    $userList = Input::get('userList');
-                    $photo->users()->attach($userList);
-                }
-
-                return Redirect::to('/');
-
-        }
+        'uses' => 'AdminController@postNewPhoto'
     )
 );
 
@@ -372,26 +216,7 @@ Route::post(
 Route::get('/admin/deletePhoto/{galleryId}',
     array(
         'before' => 'auth|adminUser',
-        function($galleryId) {
-            try {
-                $gallery = Gallery::findOrFail($galleryId);
-                if ($gallery->photos->count() < 1) {
-                    return Redirect::to('/admin/galleryAction')
-                        ->with('flash_message', 'No photos to delete!');
-                }
-                return View::make(
-                    'admin_delete_photo',
-                    array(
-                      'navInfo'=>Gallery::navInfo("admin"),
-                      'galleries'=>Gallery::all(),
-                      'galleryId'=>$galleryId
-                    )
-                );
-            } catch (Exception $e) {
-                return Redirect::to('/admin/galleryAction')
-                    ->with('flash_message', 'Problem accessing gallery!');
-            }
-        }
+        'uses' => 'AdminController@getDeletePhoto'
     )
 );
 
@@ -399,58 +224,9 @@ Route::post(
     '/admin/deletePhoto',
     array(
         'before' => 'csrf|auth|adminUser',
-        function() {
-            try {
-                $photo = Photo::find(Input::get("photoId"));
-
-                $galleryId = $photo->gallery_id;
-
-                /* Delete the main photo image file: */
-                $filename = $photo->file;
-                try {
-
-                    File::delete(public_path() . "/images/" . $filename);
-
-                } catch (Exception $e) {
-                    /* File delete failure is not catastrophic - keep deleting if possible */
-                }
-
-		/* Delete the thumbnail image file */
-                $filename = $photo->thumb;
-                try {
-
-                    File::delete(public_path() . "/images/" . $filename);
-
-                } catch (Exception $e) {
-                    /* Thumbnail delete failure is not catastrophic - keep deleting if possible */
-                }
-
-                $photo->users()->detach();
-		$photo->delete();
-
-            } catch (Exception $e) {
-
-                    return Redirect::to('/admin/deletePhoto/' . $galleryId)
-                        ->with('flash_message', 'Failed to delete photo: ' . $e->getMessage())
-                        ->withInput();
-            }
-
-            return Redirect::to('/admin/deletePhoto/' . $galleryId)
-                ->with('flash_message', 'Photo deleted!');
-        }
+	'uses' => 'AdminController@postDeletePhoto'
     )
 );
-
-
-
-
-
-
-/**
- * Administrative actions on photos in a gallery are handled implicitly
- * by the PhotoController
- */
-Route::controller('photo', 'PhotoController');
 
 
 /**
