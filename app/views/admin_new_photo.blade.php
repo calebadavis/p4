@@ -21,7 +21,10 @@
 
     <script type="text/javascript">
       $(document).ready(function() {
-        $('#userList').multiSelect();
+        $('#userList').multiSelect({ 
+            selectableHeader: 'Cannot view:',
+            selectionHeader: 'Can view:'
+        });
       });
     </script>
 @endif
@@ -43,7 +46,8 @@
 
 @if($gallery->restricted)
 
-    {{ Form::label('userList', 'Permitted Users:') }}
+    {{ Form::label('userList', 'Restricted gallery - only selected users can view the image.') }}
+    <br/>
     <select multiple="multiple" id="userList" name="userList[]">
 
       @foreach (User::all() as $user)

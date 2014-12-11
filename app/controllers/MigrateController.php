@@ -12,6 +12,17 @@ class MigrateController extends BaseController {
     }
 
     /**
+     * Special method that gets triggered if the user enters a URL for a method that does not exist
+     *
+     * @return String
+     */
+    public function missingMethod($parameters = array()) {
+
+        return 'Method "'.$parameters[0].'" not found';
+
+    }
+
+    /**
      * Helper function - converts a CSV-based gallery into new DB format
      */
     private function _migrateCSV($fname, $galName, $fullName, $imageFile) {
@@ -71,7 +82,7 @@ class MigrateController extends BaseController {
 
         $user = new User();
         $user->email = "kldx234@gmail.com";
-        $user->password = Hash::make('dummy');
+        $user->password = Hash::make('dummy1');
         $user->first_name = "Lily";
         $user->last_name = "Dolan";
         $user->admin = TRUE;
@@ -79,7 +90,7 @@ class MigrateController extends BaseController {
 
         $user = new User();
         $user->email = "caleb.davis@gmail.com";
-        $user->password = Hash::make('dummy');
+        $user->password = Hash::make('dummy2');
         $user->first_name = "Caleb";
         $user->last_name = "Davis";
         $user->save();

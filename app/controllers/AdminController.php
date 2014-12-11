@@ -9,6 +9,8 @@ class AdminController extends BaseController {
 
         parent::__construct();
 
+        $this->beforeFilter('auth');
+        $this->beforeFilter('adminUser');
     }
 
     /**
@@ -111,8 +113,8 @@ class AdminController extends BaseController {
 
         $imageFile = Input::file('file');
         $thumbFile = Input::file('thumb');
-        $imageFname = $imageFile->getClientOriginalName();
-        $thumbFname = $thumbFile->getClientOriginalName();
+        $imageFname = ($imageFile) ? $imageFile->getClientOriginalName() : "";
+        $thumbFname = ($thumbFile) ? $thumbFile->getClientOriginalName() : "";
 
         /* Validation: */
 	$rules = array(
