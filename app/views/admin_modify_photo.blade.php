@@ -27,7 +27,11 @@
           show_label  : true
         });
 @if($gallery->restricted)
-        $('#userList').multiSelect();
+        $('#userList').multiSelect({ 
+            selectableHeader: 'Cannot view:',
+            selectionHeader: 'Can view:'
+        });
+
 @endif
       });
     </script>
