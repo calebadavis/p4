@@ -39,7 +39,8 @@ class MigrateController extends BaseController {
         $file = fopen($CSVPath, 'r');
         $lines = array();
         while (($line = fgetcsv($file)) != FALSE) {
-        $lines[] = $line;
+            $lines[] = $line;
+        }
         fclose($file);
         while ($line = $lines->array_pop()) {
             list($f, $t) = $line;
