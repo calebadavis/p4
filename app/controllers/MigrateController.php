@@ -37,7 +37,11 @@ class MigrateController extends BaseController {
         echo $CSVPath . "<br/>";
 
         $file = fopen($CSVPath, 'r');
+        $lines = array();
         while (($line = fgetcsv($file)) != FALSE) {
+        $lines[] = $line;
+        fclose($file);
+        while ($line = $lines->array_pop())
             list($f, $t) = $line;
             $photo = new Photo();
             $photo->gallery_id = $gal->id;
@@ -46,7 +50,7 @@ class MigrateController extends BaseController {
             $photo->caption = $t;
             $photo->save();
         }
-        fclose($file);
+
 
     }
 
