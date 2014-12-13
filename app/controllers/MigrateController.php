@@ -88,18 +88,18 @@ class MigrateController extends BaseController {
         // For testing purposes, add a couple users:
 
         $user = new User();
-        $user->email = "kldx234@gmail.com";
+        $user->email = "admin@acme.com";
         $user->password = Hash::make('dummy1');
-        $user->first_name = "Lily";
-        $user->last_name = "Dolan";
+        $user->first_name = "Wiley";
+        $user->last_name = "Coyote";
         $user->admin = TRUE;
         $user->save();
 
         $user = new User();
-        $user->email = "caleb.davis@gmail.com";
+        $user->email = "user@acme.com";
         $user->password = Hash::make('dummy2');
-        $user->first_name = "Caleb";
-        $user->last_name = "Davis";
+        $user->first_name = "Joe";
+        $user->last_name = "Shmoe";
         $user->save();
     }
 
