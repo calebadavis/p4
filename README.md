@@ -20,6 +20,8 @@
 * https://github.com/lou/multi-select: The UI which allows selection of multiple users (associating users to a photo) displays an option-transfer dialog from Louis Cuny's 'multi-select' jquery plugin. This UI shows up in the administrative pages to publish a new photo, and to modify an existing photo.
 * https://github.com/rvera/image-picker: The administrative UI allowing a user to select an existing photo (for delete or modify) comes from Rodrigo Vera's 'Image Picker' jquery widget.
 
+## Note to the grader:
+Use the login 'admin@acme.com', password 'dummy1', to access the Admin operations.
 
 
 
