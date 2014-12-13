@@ -29,7 +29,7 @@
     </nav>
 
     <ul class="gallery">
-      @foreach($gallery->photos as $photo)
+      @foreach($gallery->photos->reverse() as $photo)
       @if ($photo->permitted(Auth::user()))
       <li>
         <a href="/images/{{$photo->file}}" title="{{$photo->caption}}" data-fancybox-group="{{$gallery->name}}_slides">
