@@ -39,10 +39,10 @@ class MigrateController extends BaseController {
         $file = fopen($CSVPath, 'r');
         $lines = array();
         while (($line = fgetcsv($file)) != FALSE) {
-            $lines[] = $line;
+            array_push($lines, $line);
         }
         fclose($file);
-        while ($line = $lines->array_pop()) {
+        foreach(array_reverse($lines) as $line) {
             list($f, $t) = $line;
             $photo = new Photo();
             $photo->gallery_id = $gal->id;
@@ -93,19 +93,13 @@ class MigrateController extends BaseController {
         // For testing purposes, add a couple users:
 
         $user = new User();
-        $user->email = "admin@acme.com";
-        $user->password = Hash::make('dummy1');
-        $user->first_name = "Wiley";
-        $user->last_name = "Coyote";
+        $user->email = "lily@lilysprite.com";
+        $user->password = Hash::make('Kk1rsten');
+        $user->first_name = "Lily";
+        $user->last_name = "Dolan";
         $user->admin = TRUE;
         $user->save();
 
-        $user = new User();
-        $user->email = "user@acme.com";
-        $user->password = Hash::make('dummy2');
-        $user->first_name = "Joe";
-        $user->last_name = "Shmoe";
-        $user->save();
     }
 
 }
