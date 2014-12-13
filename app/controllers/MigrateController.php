@@ -41,7 +41,7 @@ class MigrateController extends BaseController {
         while (($line = fgetcsv($file)) != FALSE) {
         $lines[] = $line;
         fclose($file);
-        while ($line = $lines->array_pop())
+        while ($line = $lines->array_pop()) {
             list($f, $t) = $line;
             $photo = new Photo();
             $photo->gallery_id = $gal->id;
