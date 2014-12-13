@@ -12,7 +12,7 @@
 * Because this project is a substantial re-write of a previous project (my final project for CSCI-E12, Fundamentals of Website Development), and is meant to replace the current production static site (lilysprite.com), it has a data conversion capability. This conversion is a one-time import of the data from the old hardcoded galleries (each one has a .csv file) to the new eloquent DB models. To see how this works, take a look at the route '/migrate' and the controller 'app/controllers/MigrateController.php'. You can see the old site's main 'index' page 'public/old_index.php' to get a sense of the way the infrastructure is entirely different, even though the display is very similar.
 
 ## Demo URL
-<http://screencast.com/t/G7cCeX7kxK>
+<http://www.screencast.com/t/z085REhxN3g>
 
 ## Outside code/resources
 * https://github.com/susanBuck/foobooks.git: Much of the authentication plumbing/UI draws heavily from the lecture example 'foobooks' laravel app. Also error handling/display (with flash_messages and dynamic generation of error message <div> sections) is based off the 'foobooks' example.
