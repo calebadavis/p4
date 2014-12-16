@@ -93,6 +93,20 @@ class UserController extends BaseController {
      */
     public function postLogin() {
 
+        $reset = Input::get("reset-password");
+
+	if ($reset == 'reset') {
+		switch ($response = Password::remind(Input::only('email')))
+		{
+			case Password::INVALID_USER:
+				return Redirect::back()->with('flash_message', Lang::get($response));
+
+			case Password::REMINDER_SENT:
+				return Redirect::back()->with('flash_message', Lang::get($response));
+		}
+
+        }
+
         $credentials = Input::only('email', 'password');
 
         if (Auth::attempt($credentials, $remember = true)) {

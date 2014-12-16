@@ -16,6 +16,9 @@
     Password:<br>
     {{ Form::password('password') }}<br><br>
 
+    {{ Form::checkbox('reset-password', 'reset')}}
+    I forgot my password! Send me a reset e-mail!<br><br>
+
     {{ Form::submit('Submit') }}
 
 {{ Form::close() }}

@@ -56,6 +56,11 @@ Route::post('/login', 'UserController@postLogin');
  */
 Route::get('/logout', 'UserController@getLogout');
 
+
+
+Route::controller('password', 'RemindersController');
+
+
 /**
  * The launching point for all administrative tasks - gallery selection
  */
