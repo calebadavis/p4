@@ -4,7 +4,7 @@
 ## Description
 * An image gallery showcasing LilySprite Photography.
 * Images are organized by gallery (and also by the identity of the currently logged-in user): Public galleries (guest-accessible) are: 'Portraits', 'Creative Photography', 'Fantasy Edits', and 'Modeling'. 
-* User authentication: The landing page permits login/logout/signup. Once a user is authenticated, he/she gets access to the 'Restricted' and 'Mature' galleries.
+* User authentication: The landing page permits login/logout/signup. Once a user is authenticated, he/she gets access to the 'Restricted' and 'Mature' galleries. If a user forgets his/her password, clicking on the reset checkbox (on the login page) will send a reset e-mail with a link to a page which allows generation of a new password (for that user only).
 * Per-user image filtering: The 'Restricted' gallery contains images that display only to a set of specific users.
 * Administrative UIs: If the logged-in user has 'Administrator' privs, he/she gets access to UI which permits publishing of new images, modification of existing images, and deletion of images.
 * Data-driven content: The display of galleries and images is entirely driven by Database data. The views 'app/views/index.blade.php' and 'app/views/gallery.blade.php' demonstrate the generation of UI based almost entirely on data from the 'galleries' and 'photos' tables.
@@ -21,7 +21,7 @@
 * https://github.com/rvera/image-picker: The administrative UI allowing a user to select an existing photo (for delete or modify) comes from Rodrigo Vera's 'Image Picker' jquery widget.
 
 ## Note to the grader:
-Use the login 'admin@acme.com', password 'dummy1', to access the Admin operations.
+Use the login 'admin@acme.com', password 'dummy1', to access the Admin operations. You can also see the site in production at 'http://lilysprite.com', but please don't spam that site's database with new users.
 
 
 
