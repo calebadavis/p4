@@ -76,7 +76,12 @@ class RemindersController extends Controller {
 				return Redirect::back()->with('flash_message', Lang::get($response));
 
 			case Password::PASSWORD_RESET:
-				return Redirect::to('/');
+                            $credentials = Input::only('email', 'password');
+                            if (Auth::attempt($credentials, $remember = true)) {
+                                return Redirect::intended('/')->with('flash_message', 'Welcome Back!');
+                            } else {
+                                return Redirect::to('/login')->with('flash_message', 'Log in failed; please try again.');
+                            }
 		}
 	}
 
