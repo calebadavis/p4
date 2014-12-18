@@ -56,8 +56,13 @@ Route::post('/login', 'UserController@postLogin');
  */
 Route::get('/logout', 'UserController@getLogout');
 
-
-
+/**
+ * RESTful resource controller for password resets.
+ * The entry point to this functionality is in the 'UserController' 
+ * 'getLogin' and 'postLogin' (a 'reset' checkbox triggers the reset 
+ * e-mail to the user). Once the user clicks on the e-mail link, 
+ * this 'RemindersController' handles the rest of the password reset.
+ */
 Route::controller('password', 'RemindersController');
 
 
@@ -88,7 +93,7 @@ Route::post('/admin/deletePhoto',             'AdminController@postDeletePhoto')
 /**
 * Migrate old format CSV galleries into new DB style
 * Note: This migrating of data is different from Laravel 'Migrations'.
-* (Implicit Routing)
+* (Implicit Routing). This route will be commented out in production.
 */
 Route::controller('migrate', 'MigrateController');
 
